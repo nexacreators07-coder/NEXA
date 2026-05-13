@@ -1,0 +1,1805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEXA — Website Building Co.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF8F4;
+    --sand: #F2EDE4;
+    --champagne: #C9A96E;
+    --champagne-light: #E8D5B0;
+    --charcoal: #1A1915;
+    --charcoal-mid: #2E2C27;
+    --warm-gray: #8A8680;
+    --warm-gray-light: #B5B1AB;
+    --divider: rgba(26,25,21,0.1);
+    --gold: #C9A96E;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--charcoal);
+    cursor: none;
+    overflow-x: hidden;
+  }
+
+  /* CUSTOM CURSOR */
+  #cursor {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    background: var(--champagne);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease, width 0.3s ease, height 0.3s ease, background 0.3s ease;
+    mix-blend-mode: multiply;
+  }
+  #cursor-ring {
+    position: fixed;
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(201,169,110,0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.18s ease, width 0.3s ease, height 0.3s ease, opacity 0.3s ease;
+  }
+  body:hover #cursor-ring { opacity: 1; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-track { background: var(--sand); }
+  ::-webkit-scrollbar-thumb { background: var(--champagne); }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 28px 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.5s ease;
+  }
+  nav.scrolled {
+    background: rgba(250,248,244,0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 18px 60px;
+    border-bottom: 1px solid var(--divider);
+  }
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+  .nav-logo-mark {
+    height: 36px;
+    display: flex;
+    align-items: center;
+  }
+  .nav-logo-mark img {
+    height: 36px;
+    width: auto;
+    filter: invert(1) brightness(0);
+  }
+  .nav-logo-text {
+    display: flex;
+    flex-direction: column;
+  }
+  .nav-logo-name {
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 15px;
+    letter-spacing: 0.18em;
+    color: var(--charcoal);
+    line-height: 1;
+  }
+  .nav-logo-sub {
+    font-size: 8px;
+    letter-spacing: 0.22em;
+    color: var(--warm-gray);
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 44px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    color: var(--warm-gray);
+    text-decoration: none;
+    transition: color 0.3s;
+    text-transform: uppercase;
+  }
+  .nav-links a:hover { color: var(--charcoal); }
+  .nav-cta {
+    padding: 10px 28px;
+    border: 1px solid var(--charcoal);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--charcoal);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    background: transparent;
+  }
+  .nav-cta:hover {
+    background: var(--charcoal);
+    color: var(--cream);
+  }
+
+  /* PAGE LOADER */
+  #loader {
+    position: fixed;
+    inset: 0;
+    background: var(--charcoal);
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+  }
+  #loader.hidden { opacity: 0; visibility: hidden; }
+  .loader-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 48px;
+    font-weight: 300;
+    color: var(--cream);
+    letter-spacing: 0.3em;
+    opacity: 0;
+    animation: loaderFade 0.8s ease 0.3s forwards;
+  }
+  .loader-line {
+    width: 0;
+    height: 1px;
+    background: var(--champagne);
+    animation: loaderLine 1.2s ease 0.5s forwards;
+  }
+  @keyframes loaderFade { to { opacity: 1; } }
+  @keyframes loaderLine { to { width: 200px; } }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 160px 60px 100px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 70% 40%, rgba(201,169,110,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse 50% 50% at 20% 80%, rgba(201,169,110,0.05) 0%, transparent 60%);
+  }
+  .hero-grid-overlay {
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(to right, rgba(26,25,21,0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(26,25,21,0.03) 1px, transparent 1px);
+    background-size: 80px 80px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  }
+  .hero-content {
+    max-width: 900px;
+    position: relative;
+    z-index: 2;
+  }
+  .hero-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fadeUp 0.9s ease 1.5s forwards;
+  }
+  .hero-eyebrow-line {
+    width: 40px;
+    height: 1px;
+    background: var(--champagne);
+  }
+  .hero-eyebrow-text {
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--champagne);
+  }
+  .hero-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(64px, 9vw, 130px);
+    font-weight: 300;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    color: var(--charcoal);
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fadeUp 0.9s ease 1.7s forwards;
+  }
+  .hero-headline em {
+    font-style: italic;
+    color: var(--champagne);
+  }
+  .hero-sub {
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--warm-gray);
+    max-width: 520px;
+    margin-bottom: 56px;
+    font-weight: 300;
+    opacity: 0;
+    animation: fadeUp 0.9s ease 1.9s forwards;
+  }
+  .hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.9s ease 2.1s forwards;
+  }
+  .btn-primary {
+    padding: 16px 40px;
+    background: var(--charcoal);
+    color: var(--cream);
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid var(--charcoal);
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--champagne);
+    transform: translateX(-100%);
+    transition: transform 0.4s ease;
+  }
+  .btn-primary:hover::before { transform: translateX(0); }
+  .btn-primary span { position: relative; z-index: 1; }
+  .btn-primary:hover { border-color: var(--champagne); color: var(--cream); }
+  .btn-ghost {
+    padding: 16px 40px;
+    background: transparent;
+    color: var(--charcoal);
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid rgba(26,25,21,0.25);
+    transition: all 0.3s ease;
+  }
+  .btn-ghost:hover {
+    border-color: var(--charcoal);
+    background: rgba(26,25,21,0.04);
+  }
+  .hero-stats {
+    position: absolute;
+    right: 60px;
+    bottom: 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    z-index: 2;
+    opacity: 0;
+    animation: fadeIn 1s ease 2.3s forwards;
+  }
+  .hero-stat {
+    text-align: right;
+  }
+  .hero-stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 36px;
+    font-weight: 300;
+    color: var(--charcoal);
+    line-height: 1;
+  }
+  .hero-stat-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--warm-gray);
+    margin-top: 4px;
+  }
+  .hero-scroll {
+    position: absolute;
+    left: 60px;
+    bottom: 60px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    animation: fadeIn 1s ease 2.5s forwards;
+  }
+  .hero-scroll-line {
+    width: 1px;
+    height: 50px;
+    background: var(--champagne);
+    animation: scrollPulse 2s ease infinite;
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+  .hero-scroll-text {
+    writing-mode: vertical-lr;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--warm-gray);
+  }
+  .hero-float-card {
+    position: absolute;
+    right: 8%;
+    top: 35%;
+    background: rgba(250,248,244,0.7);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(201,169,110,0.2);
+    padding: 24px 28px;
+    max-width: 200px;
+    animation: float 6s ease-in-out infinite;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+  .hero-float-card.visible { opacity: 1; }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-12px); }
+  }
+  .hero-float-card-icon {
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--champagne);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hero-float-card-title {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--charcoal);
+    margin-bottom: 6px;
+  }
+  .hero-float-card-sub {
+    font-size: 11px;
+    color: var(--warm-gray);
+    line-height: 1.5;
+  }
+
+  /* SECTIONS */
+  section { padding: 120px 60px; }
+
+  .section-eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .section-eyebrow-line { width: 32px; height: 1px; background: var(--champagne); }
+  .section-eyebrow-text { font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--champagne); }
+
+  /* TRUST STRIP */
+  .trust-strip {
+    padding: 60px;
+    border-top: 1px solid var(--divider);
+    border-bottom: 1px solid var(--divider);
+    overflow: hidden;
+    background: var(--sand);
+  }
+  .trust-track {
+    display: flex;
+    gap: 80px;
+    align-items: center;
+    width: max-content;
+    animation: marquee 22s linear infinite;
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .trust-item {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--warm-gray-light);
+    white-space: nowrap;
+    transition: color 0.3s;
+  }
+  .trust-item:hover { color: var(--champagne); }
+  .trust-sep {
+    width: 4px;
+    height: 4px;
+    background: var(--champagne-light);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ABOUT */
+  .about { background: var(--charcoal); color: var(--cream); }
+  .about-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 100px;
+    align-items: center;
+  }
+  .about-left .section-eyebrow-line { background: var(--champagne); }
+  .about-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(44px, 5vw, 76px);
+    font-weight: 300;
+    line-height: 1.05;
+    margin-bottom: 32px;
+    color: var(--cream);
+  }
+  .about-headline em { font-style: italic; color: var(--champagne); }
+  .about-body {
+    font-size: 16px;
+    line-height: 1.8;
+    color: rgba(250,248,244,0.6);
+    font-weight: 300;
+    margin-bottom: 48px;
+  }
+  .about-pillars {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .about-pillar {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(250,248,244,0.08);
+  }
+  .about-pillar:last-child { border-bottom: none; padding-bottom: 0; }
+  .about-pillar-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 13px;
+    color: var(--champagne);
+    letter-spacing: 0.1em;
+    padding-top: 2px;
+    flex-shrink: 0;
+  }
+  .about-pillar-title {
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cream);
+    margin-bottom: 6px;
+  }
+  .about-pillar-body {
+    font-size: 14px;
+    line-height: 1.6;
+    color: rgba(250,248,244,0.5);
+    font-weight: 300;
+  }
+  .about-right-visual {
+    position: relative;
+  }
+  .about-frame {
+    aspect-ratio: 4/5;
+    background: rgba(250,248,244,0.04);
+    border: 1px solid rgba(201,169,110,0.2);
+    position: relative;
+    overflow: hidden;
+  }
+  .about-frame-inner {
+    position: absolute;
+    inset: 20px;
+    border: 1px solid rgba(201,169,110,0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+  .about-frame-mark {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 120px;
+    font-weight: 200;
+    color: rgba(201,169,110,0.1);
+    line-height: 1;
+    letter-spacing: -0.05em;
+  }
+  .about-frame-tag {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(250,248,244,0.2);
+  }
+  .about-badge {
+    position: absolute;
+    bottom: -24px;
+    left: -24px;
+    background: var(--champagne);
+    color: var(--charcoal);
+    padding: 20px 24px;
+  }
+  .about-badge-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 40px;
+    font-weight: 300;
+    line-height: 1;
+    color: var(--charcoal);
+  }
+  .about-badge-text {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(26,25,21,0.7);
+    margin-top: 4px;
+  }
+
+  /* SERVICES */
+  .services-inner { max-width: 1200px; margin: 0 auto; }
+  .services-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: end;
+    margin-bottom: 80px;
+  }
+  .services-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(44px, 5vw, 72px);
+    font-weight: 300;
+    line-height: 1.0;
+    color: var(--charcoal);
+  }
+  .services-headline em { font-style: italic; color: var(--champagne); }
+  .services-desc {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--warm-gray);
+    font-weight: 300;
+    align-self: end;
+  }
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    background: var(--divider);
+  }
+  .service-card {
+    background: var(--cream);
+    padding: 48px 40px;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+    cursor: none;
+  }
+  .service-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--champagne);
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
+    transform-origin: left;
+  }
+  .service-card:hover { background: var(--charcoal); }
+  .service-card:hover::after { transform: scaleX(1); }
+  .service-icon {
+    width: 44px;
+    height: 44px;
+    border: 1px solid rgba(201,169,110,0.4);
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s;
+  }
+  .service-card:hover .service-icon { border-color: rgba(201,169,110,0.6); }
+  .service-icon svg { width: 18px; height: 18px; stroke: var(--champagne); fill: none; stroke-width: 1.2; }
+  .service-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--champagne);
+    margin-bottom: 12px;
+    display: block;
+    transition: color 0.4s;
+  }
+  .service-title {
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--charcoal);
+    margin-bottom: 12px;
+    letter-spacing: 0.02em;
+    transition: color 0.4s;
+  }
+  .service-card:hover .service-title { color: var(--cream); }
+  .service-desc {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--warm-gray);
+    font-weight: 300;
+    transition: color 0.4s;
+  }
+  .service-card:hover .service-desc { color: rgba(250,248,244,0.5); }
+
+  /* PROJECTS */
+  .projects { background: var(--sand); }
+  .projects-inner { max-width: 1200px; margin: 0 auto; }
+  .projects-header { margin-bottom: 72px; }
+  .projects-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(44px, 5vw, 72px);
+    font-weight: 300;
+    line-height: 1.0;
+    color: var(--charcoal);
+    max-width: 600px;
+  }
+  .projects-headline em { font-style: italic; color: var(--champagne); }
+  .projects-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3px;
+  }
+  .project-card {
+    position: relative;
+    overflow: hidden;
+    cursor: none;
+    background: var(--charcoal);
+  }
+  .project-card.large { grid-column: span 2; }
+  .project-visual {
+    aspect-ratio: 16/9;
+    background: var(--charcoal-mid);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.6s ease;
+  }
+  .project-card.large .project-visual { aspect-ratio: 21/9; }
+  .project-card:hover .project-visual { transform: scale(1.02); }
+  .project-visual-inner {
+    width: 70%;
+    height: 75%;
+    position: relative;
+  }
+  .project-mock {
+    width: 100%;
+    height: 100%;
+    border: 1px solid rgba(201,169,110,0.2);
+    background: rgba(250,248,244,0.03);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .project-mock-bar {
+    height: 28px;
+    background: rgba(201,169,110,0.06);
+    border-bottom: 1px solid rgba(201,169,110,0.1);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 6px;
+  }
+  .project-mock-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: rgba(201,169,110,0.2);
+  }
+  .project-mock-content {
+    flex: 1;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .project-mock-hero {
+    height: 40%;
+    background: linear-gradient(135deg, rgba(201,169,110,0.08), rgba(201,169,110,0.02));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .project-mock-title-line {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: rgba(201,169,110,0.4);
+    text-transform: uppercase;
+  }
+  .project-mock-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+  }
+  .project-mock-line {
+    height: 2px;
+    background: rgba(250,248,244,0.05);
+    border-radius: 1px;
+  }
+  .project-mock-line:nth-child(1) { width: 80%; }
+  .project-mock-line:nth-child(2) { width: 60%; }
+  .project-mock-line:nth-child(3) { width: 70%; }
+  .project-tag {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 5px 12px;
+    background: rgba(201,169,110,0.15);
+    border: 1px solid rgba(201,169,110,0.3);
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--champagne);
+  }
+  .project-info {
+    padding: 28px 32px;
+    background: var(--charcoal);
+  }
+  .project-cat {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--champagne);
+    margin-bottom: 8px;
+  }
+  .project-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 300;
+    color: var(--cream);
+    margin-bottom: 8px;
+  }
+  .project-desc {
+    font-size: 13px;
+    color: rgba(250,248,244,0.4);
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  /* WHY NEXA */
+  .why-inner { max-width: 1200px; margin: 0 auto; }
+  .why-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(44px, 5vw, 80px);
+    font-weight: 300;
+    line-height: 1.0;
+    color: var(--charcoal);
+    max-width: 700px;
+    margin-bottom: 80px;
+  }
+  .why-headline em { font-style: italic; color: var(--champagne); }
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--divider);
+  }
+  .why-item {
+    background: var(--cream);
+    padding: 48px 40px;
+    transition: background 0.3s;
+  }
+  .why-item:hover { background: var(--sand); }
+  .why-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 48px;
+    font-weight: 200;
+    color: var(--champagne-light);
+    line-height: 1;
+    margin-bottom: 20px;
+  }
+  .why-title {
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--charcoal);
+    margin-bottom: 12px;
+    letter-spacing: 0.02em;
+  }
+  .why-desc {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--warm-gray);
+    font-weight: 300;
+  }
+
+  /* PHILOSOPHY */
+  .philosophy {
+    background: var(--charcoal);
+    padding: 160px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .philosophy-bg {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(201,169,110,0.06) 0%, transparent 70%);
+  }
+  .philosophy-quote {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(40px, 6vw, 96px);
+    font-weight: 200;
+    line-height: 1.15;
+    color: var(--cream);
+    max-width: 1000px;
+    margin: 0 auto 48px;
+    position: relative;
+    z-index: 1;
+    letter-spacing: -0.01em;
+  }
+  .philosophy-quote em { font-style: italic; color: var(--champagne); }
+  .philosophy-attr {
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(250,248,244,0.3);
+    position: relative;
+    z-index: 1;
+  }
+  .philosophy-pillars {
+    display: flex;
+    justify-content: center;
+    gap: 80px;
+    margin-top: 80px;
+    position: relative;
+    z-index: 1;
+    flex-wrap: wrap;
+  }
+  .philo-pill {
+    text-align: center;
+  }
+  .philo-pill-mark {
+    width: 1px;
+    height: 40px;
+    background: rgba(201,169,110,0.4);
+    margin: 0 auto 20px;
+  }
+  .philo-pill-text {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(250,248,244,0.4);
+  }
+
+  /* PROCESS */
+  .process-inner { max-width: 1200px; margin: 0 auto; }
+  .process-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(44px, 5vw, 72px);
+    font-weight: 300;
+    line-height: 1.0;
+    color: var(--charcoal);
+    max-width: 500px;
+    margin-bottom: 80px;
+  }
+  .process-headline em { font-style: italic; color: var(--champagne); }
+  .process-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    position: relative;
+  }
+  .process-steps::before {
+    content: '';
+    position: absolute;
+    top: 28px;
+    left: 12%;
+    right: 12%;
+    height: 1px;
+    background: linear-gradient(to right, var(--champagne), rgba(201,169,110,0.2));
+  }
+  .process-step { padding: 0 24px; position: relative; }
+  .process-dot {
+    width: 56px;
+    height: 56px;
+    border: 1px solid var(--champagne);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 32px;
+    background: var(--cream);
+    position: relative;
+    z-index: 1;
+    transition: all 0.3s;
+  }
+  .process-step:hover .process-dot {
+    background: var(--champagne);
+  }
+  .process-dot-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-weight: 300;
+    color: var(--champagne);
+    transition: color 0.3s;
+  }
+  .process-step:hover .process-dot-num { color: var(--cream); }
+  .process-step-title {
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--charcoal);
+    margin-bottom: 12px;
+    font-family: 'Cormorant Garamond', serif;
+  }
+  .process-step-desc {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--warm-gray);
+    font-weight: 300;
+  }
+
+  /* TESTIMONIALS */
+  .testimonials { background: var(--sand); }
+  .testimonials-inner { max-width: 1200px; margin: 0 auto; }
+  .testimonials-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(44px, 5vw, 72px);
+    font-weight: 300;
+    line-height: 1.0;
+    color: var(--charcoal);
+    margin-bottom: 72px;
+    max-width: 600px;
+  }
+  .testimonials-headline em { font-style: italic; color: var(--champagne); }
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .testimonial-card {
+    background: rgba(250,248,244,0.6);
+    border: 1px solid rgba(201,169,110,0.15);
+    padding: 40px 36px;
+    backdrop-filter: blur(10px);
+    transition: all 0.4s;
+  }
+  .testimonial-card:hover {
+    background: var(--cream);
+    border-color: rgba(201,169,110,0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgba(26,25,21,0.08);
+  }
+  .testimonial-mark {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 56px;
+    font-weight: 200;
+    color: var(--champagne);
+    line-height: 0.8;
+    margin-bottom: 20px;
+  }
+  .testimonial-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1.6;
+    color: var(--charcoal);
+    margin-bottom: 28px;
+  }
+  .testimonial-divider {
+    width: 32px;
+    height: 1px;
+    background: var(--champagne);
+    margin-bottom: 20px;
+  }
+  .testimonial-source {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--warm-gray);
+  }
+
+  /* CTA SECTION */
+  .final-cta {
+    background: var(--charcoal);
+    padding: 180px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .final-cta-bg {
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 70% 70% at 30% 50%, rgba(201,169,110,0.05) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 50% at 80% 50%, rgba(201,169,110,0.04) 0%, transparent 60%);
+  }
+  .final-cta-grid {
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(to right, rgba(201,169,110,0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(201,169,110,0.04) 1px, transparent 1px);
+    background-size: 80px 80px;
+  }
+  .final-cta-content { position: relative; z-index: 1; }
+  .final-cta-pre {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--champagne);
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+  .final-cta-pre::before, .final-cta-pre::after {
+    content: '';
+    width: 30px;
+    height: 1px;
+    background: var(--champagne);
+  }
+  .final-cta-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(44px, 6vw, 96px);
+    font-weight: 200;
+    line-height: 1.05;
+    color: var(--cream);
+    max-width: 900px;
+    margin: 0 auto 32px;
+    letter-spacing: -0.01em;
+  }
+  .final-cta-headline em { font-style: italic; color: var(--champagne); }
+  .final-cta-sub {
+    font-size: 17px;
+    line-height: 1.7;
+    color: rgba(250,248,244,0.5);
+    max-width: 500px;
+    margin: 0 auto 56px;
+    font-weight: 300;
+  }
+  .final-cta-btn {
+    display: inline-block;
+    padding: 18px 52px;
+    border: 1px solid var(--champagne);
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--champagne);
+    text-decoration: none;
+    transition: all 0.4s;
+    position: relative;
+    overflow: hidden;
+  }
+  .final-cta-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--champagne);
+    transform: translateY(100%);
+    transition: transform 0.4s ease;
+  }
+  .final-cta-btn:hover::before { transform: translateY(0); }
+  .final-cta-btn:hover { color: var(--charcoal); }
+  .final-cta-btn span { position: relative; z-index: 1; }
+  .final-email {
+    margin-top: 40px;
+    font-size: 14px;
+    color: rgba(250,248,244,0.3);
+    letter-spacing: 0.08em;
+  }
+  .final-email a {
+    color: rgba(201,169,110,0.6);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .final-email a:hover { color: var(--champagne); }
+
+  /* FOOTER */
+  footer {
+    background: var(--charcoal);
+    border-top: 1px solid rgba(201,169,110,0.1);
+    padding: 60px;
+  }
+  .footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 32px;
+  }
+  .footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .footer-logo-mark {
+    width: 32px;
+    height: 32px;
+    border: 1px solid rgba(201,169,110,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .footer-logo-mark span {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--champagne);
+  }
+  .footer-logo-text { color: var(--cream); font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase; }
+  .footer-logo-sub { font-size: 9px; letter-spacing: 0.2em; color: rgba(250,248,244,0.3); text-transform: uppercase; }
+  .footer-nav {
+    display: flex;
+    gap: 40px;
+    list-style: none;
+  }
+  .footer-nav a {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(250,248,244,0.4);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .footer-nav a:hover { color: var(--champagne); }
+  .footer-copy {
+    font-size: 11px;
+    color: rgba(250,248,244,0.2);
+    letter-spacing: 0.06em;
+  }
+
+  /* REVEAL ANIMATION */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+  .reveal-delay-5 { transition-delay: 0.5s; }
+  .reveal-delay-6 { transition-delay: 0.6s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* MOBILE */
+  @media (max-width: 900px) {
+    nav { padding: 20px 24px; }
+    nav.scrolled { padding: 14px 24px; }
+    .nav-links { display: none; }
+    section { padding: 80px 24px; }
+    .hero { padding: 120px 24px 80px; }
+    .hero-stats { display: none; }
+    .hero-scroll { display: none; }
+    .hero-float-card { display: none; }
+    .about-inner { grid-template-columns: 1fr; gap: 60px; }
+    .about-right-visual { display: none; }
+    .services-header { grid-template-columns: 1fr; gap: 24px; }
+    .services-grid { grid-template-columns: 1fr; }
+    .projects-grid { grid-template-columns: 1fr; }
+    .project-card.large { grid-column: span 1; }
+    .why-grid { grid-template-columns: 1fr; }
+    .process-steps { grid-template-columns: 1fr 1fr; gap: 40px; }
+    .process-steps::before { display: none; }
+    .testimonials-grid { grid-template-columns: 1fr; }
+    .final-cta { padding: 100px 24px; }
+    .footer-inner { flex-direction: column; align-items: flex-start; }
+    .footer-nav { flex-wrap: wrap; gap: 24px; }
+    .trust-strip { padding: 40px 24px; }
+    .philosophy { padding: 100px 24px; }
+    .philosophy-pillars { gap: 40px; }
+  }
+
+  @media (max-width: 600px) {
+    .process-steps { grid-template-columns: 1fr; }
+    .hero-headline { font-size: 52px; }
+    .hero-actions { flex-direction: column; align-items: flex-start; gap: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-logo">NEXA</div>
+  <div class="loader-line"></div>
+</div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-mark"></div>
+    <div class="nav-logo-text">
+      <span class="nav-logo-name">NEXA</span>
+      <span class="nav-logo-sub">Website Building Co.</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#process">Process</a></li>
+  </ul>
+  <a href="mailto:nexa.creators07@gmail.com" class="nav-cta">Start Project</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">
+      <div class="hero-eyebrow-line"></div>
+      <span class="hero-eyebrow-text">Premium Website Studio</span>
+    </div>
+    <h1 class="hero-headline">
+      Websites<br>That Build<br><em>Trust.</em>
+    </h1>
+    <p class="hero-sub">We craft premium business websites designed to elevate trust, authority, and conversions for modern brands.</p>
+    <div class="hero-actions">
+      <a href="mailto:nexa.creators07@gmail.com" class="btn-primary"><span>Start Your Brand Upgrade</span></a>
+      <a href="#projects" class="btn-ghost">View Projects</a>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-num">120+</div>
+      <div class="hero-stat-label">Designs Created</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">∞</div>
+      <div class="hero-stat-label">Premium Standards</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">01</div>
+      <div class="hero-stat-label">Focused Mission</div>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="hero-scroll-line"></div>
+    <span class="hero-scroll-text">Scroll</span>
+  </div>
+
+  <div class="hero-float-card" id="heroCard">
+    <div class="hero-float-card-icon">
+      <svg viewBox="0 0 24 24" stroke-width="1.2" stroke="currentColor" fill="none" style="color:var(--champagne);width:16px;height:16px;">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <div class="hero-float-card-title">Design Standard</div>
+    <div class="hero-float-card-sub">International premium UX principles</div>
+  </div>
+</section>
+
+<!-- TRUST STRIP -->
+<div class="trust-strip">
+  <div class="trust-track">
+    <span class="trust-item">Designed for Modern Businesses</span>
+    <span class="trust-sep"></span>
+    <span class="trust-item">Premium UX Standards</span>
+    <span class="trust-sep"></span>
+    <span class="trust-item">Trust-Driven Design</span>
+    <span class="trust-sep"></span>
+    <span class="trust-item">Mobile-First Approach</span>
+    <span class="trust-sep"></span>
+    <span class="trust-item">International Aesthetics</span>
+    <span class="trust-sep"></span>
+    <span class="trust-item">Business-Focused Execution</span>
+    <span class="trust-sep"></span>
+    <span class="trust-item">Designed for Modern Businesses</span>
+    <span class="trust-sep"></span>
+    <span class="trust-item">Premium UX Standards</span>
+    <span class="trust-sep"></span>
+    <span class="trust-item">Trust-Driven Design</span>
+    <span class="trust-sep"></span>
+    <span class="trust-item">Mobile-First Approach</span>
+    <span class="trust-sep"></span>
+    <span class="trust-item">International Aesthetics</span>
+    <span class="trust-sep"></span>
+    <span class="trust-item">Business-Focused Execution</span>
+    <span class="trust-sep"></span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-inner">
+    <div class="about-left">
+      <div class="section-eyebrow reveal">
+        <div class="section-eyebrow-line"></div>
+        <span class="section-eyebrow-text">About NEXA</span>
+      </div>
+      <h2 class="about-headline reveal reveal-delay-1">
+        We Build<br>Digital <em>Presence</em><br>That Matters.
+      </h2>
+      <p class="about-body reveal reveal-delay-2">NEXA is a premium website building studio focused on creating business-focused digital experiences. We combine strategic thinking with modern aesthetics to craft websites that don't just look beautiful — they build trust and drive results.</p>
+      <div class="about-pillars reveal reveal-delay-3">
+        <div class="about-pillar">
+          <span class="about-pillar-num">01</span>
+          <div>
+            <div class="about-pillar-title">Trust Through Design</div>
+            <div class="about-pillar-body">Every pixel intentional. Every layout deliberate. Design that builds credibility at first glance.</div>
+          </div>
+        </div>
+        <div class="about-pillar">
+          <span class="about-pillar-num">02</span>
+          <div>
+            <div class="about-pillar-title">Business-Focused Strategy</div>
+            <div class="about-pillar-body">We design with your business goals at the center — not just aesthetics.</div>
+          </div>
+        </div>
+        <div class="about-pillar">
+          <span class="about-pillar-num">03</span>
+          <div>
+            <div class="about-pillar-title">Premium at Every Touchpoint</div>
+            <div class="about-pillar-body">From typography to transitions, every detail reflects international design standards.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="about-right-visual reveal reveal-delay-2">
+      <div class="about-frame">
+        <div class="about-frame-inner">
+          <div class="about-frame-mark">N</div>
+          <div class="about-frame-tag">Premium Digital Studio</div>
+        </div>
+      </div>
+      <div class="about-badge">
+        <div class="about-badge-num">120+</div>
+        <div class="about-badge-text">Modern Designs</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="services-inner">
+    <div class="services-header">
+      <div>
+        <div class="section-eyebrow reveal">
+          <div class="section-eyebrow-line"></div>
+          <span class="section-eyebrow-text">What We Do</span>
+        </div>
+        <h2 class="services-headline reveal reveal-delay-1">
+          Premium<br><em>Services</em><br>for Modern<br>Brands.
+        </h2>
+      </div>
+      <p class="services-desc reveal reveal-delay-2">Every service is delivered with the same commitment to quality, precision, and premium execution that defines the NEXA standard.</p>
+    </div>
+    <div class="services-grid reveal reveal-delay-1">
+      <div class="service-card">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="1"/><path d="M8 21h8M12 17v4"/></svg>
+        </div>
+        <span class="service-num">01</span>
+        <div class="service-title">Website Design</div>
+        <div class="service-desc">Bespoke business websites crafted for trust, conversion, and lasting brand impressions.</div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <span class="service-num">02</span>
+        <div class="service-title">Landing Pages</div>
+        <div class="service-desc">High-converting, focused pages designed to turn visitors into loyal customers.</div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M12 8v8"/></svg>
+        </div>
+        <span class="service-num">03</span>
+        <div class="service-title">UI/UX Design</div>
+        <div class="service-desc">Intuitive, elegant interfaces that guide users with clarity and strategic precision.</div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+        </div>
+        <span class="service-num">04</span>
+        <div class="service-title">Website Redesign</div>
+        <div class="service-desc">Transform outdated websites into premium digital assets that reflect your true brand value.</div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <span class="service-num">05</span>
+        <div class="service-title">Speed Optimization</div>
+        <div class="service-desc">Blazing-fast websites that perform as well as they look, ensuring zero friction experiences.</div>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">
+          <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        </div>
+        <span class="service-num">06</span>
+        <div class="service-title">Mobile-First Development</div>
+        <div class="service-desc">Responsive, premium mobile experiences for audiences who discover you through their phones.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section class="projects" id="projects">
+  <div class="projects-inner">
+    <div class="projects-header">
+      <div class="section-eyebrow reveal">
+        <div class="section-eyebrow-line"></div>
+        <span class="section-eyebrow-text">Featured Work</span>
+      </div>
+      <h2 class="projects-headline reveal reveal-delay-1">
+        Design<br><em>Explorations</em><br>& Concepts.
+      </h2>
+    </div>
+    <div class="projects-grid">
+      <div class="project-card large reveal">
+        <div class="project-visual">
+          <div class="project-tag">Concept Project</div>
+          <div class="project-visual-inner">
+            <div class="project-mock">
+              <div class="project-mock-bar">
+                <div class="project-mock-dot"></div>
+                <div class="project-mock-dot"></div>
+                <div class="project-mock-dot"></div>
+              </div>
+              <div class="project-mock-content">
+                <div class="project-mock-hero">
+                  <span class="project-mock-title-line">AURORA DENTAL CLINIC</span>
+                </div>
+                <div class="project-mock-lines">
+                  <div class="project-mock-line"></div>
+                  <div class="project-mock-line"></div>
+                  <div class="project-mock-line"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="project-info">
+          <div class="project-cat">Healthcare · Concept</div>
+          <div class="project-name">Luxury Dental Clinic Website</div>
+          <div class="project-desc">Premium, trust-first design for a modern dental practice. Warm tones, calming UX.</div>
+        </div>
+      </div>
+      <div class="project-card reveal reveal-delay-1">
+        <div class="project-visual">
+          <div class="project-tag">UI Concept</div>
+          <div class="project-visual-inner">
+            <div class="project-mock">
+              <div class="project-mock-bar">
+                <div class="project-mock-dot"></div>
+                <div class="project-mock-dot"></div>
+              </div>
+              <div class="project-mock-content">
+                <div class="project-mock-hero">
+                  <span class="project-mock-title-line">FORMA ARCHITECTS</span>
+                </div>
+                <div class="project-mock-lines">
+                  <div class="project-mock-line"></div>
+                  <div class="project-mock-line"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="project-info">
+          <div class="project-cat">Architecture · Concept</div>
+          <div class="project-name">Modern Architecture Studio</div>
+          <div class="project-desc">Portfolio-driven experience for a boutique architecture firm.</div>
+        </div>
+      </div>
+      <div class="project-card reveal reveal-delay-2">
+        <div class="project-visual">
+          <div class="project-tag">Design Exploration</div>
+          <div class="project-visual-inner">
+            <div class="project-mock">
+              <div class="project-mock-bar">
+                <div class="project-mock-dot"></div>
+                <div class="project-mock-dot"></div>
+              </div>
+              <div class="project-mock-content">
+                <div class="project-mock-hero">
+                  <span class="project-mock-title-line">MAISON HOTEL</span>
+                </div>
+                <div class="project-mock-lines">
+                  <div class="project-mock-line"></div>
+                  <div class="project-mock-line"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="project-info">
+          <div class="project-cat">Hospitality · Concept</div>
+          <div class="project-name">Boutique Hotel Website</div>
+          <div class="project-desc">Cinematic, immersive booking experience for a luxury property.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY NEXA -->
+<section id="why">
+  <div class="why-inner">
+    <div class="section-eyebrow reveal">
+      <div class="section-eyebrow-line"></div>
+      <span class="section-eyebrow-text">The NEXA Difference</span>
+    </div>
+    <h2 class="why-headline reveal reveal-delay-1">
+      Why Discerning<br>Brands Choose<br><em>NEXA.</em>
+    </h2>
+    <div class="why-grid">
+      <div class="why-item reveal reveal-delay-1">
+        <div class="why-num">01</div>
+        <div class="why-title">Business-Focused Design</div>
+        <div class="why-desc">Every design decision is tied to your business goals — not just aesthetics for aesthetics' sake.</div>
+      </div>
+      <div class="why-item reveal reveal-delay-2">
+        <div class="why-num">02</div>
+        <div class="why-title">Premium Modern Aesthetics</div>
+        <div class="why-desc">We design at the intersection of luxury and function, creating websites that command respect.</div>
+      </div>
+      <div class="why-item reveal reveal-delay-3">
+        <div class="why-num">03</div>
+        <div class="why-title">Fast & Optimized</div>
+        <div class="why-desc">Speed is part of the premium experience. Our websites load fast and perform flawlessly.</div>
+      </div>
+      <div class="why-item reveal reveal-delay-1">
+        <div class="why-num">04</div>
+        <div class="why-title">Mobile-First Always</div>
+        <div class="why-desc">Your audience is on mobile. We build mobile-first, so your brand shines on every screen.</div>
+      </div>
+      <div class="why-item reveal reveal-delay-2">
+        <div class="why-num">05</div>
+        <div class="why-title">Conversion-Focused Layouts</div>
+        <div class="why-desc">Strategic UX that guides visitors naturally toward becoming your customers.</div>
+      </div>
+      <div class="why-item reveal reveal-delay-3">
+        <div class="why-num">06</div>
+        <div class="why-title">International Design Standards</div>
+        <div class="why-desc">We design to global standards, ensuring your brand looks world-class wherever it's seen.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PHILOSOPHY -->
+<section class="philosophy">
+  <div class="philosophy-bg"></div>
+  <div class="section-eyebrow reveal" style="justify-content:center;">
+    <div class="section-eyebrow-line"></div>
+    <span class="section-eyebrow-text">Design Philosophy</span>
+    <div class="section-eyebrow-line"></div>
+  </div>
+  <blockquote class="philosophy-quote reveal reveal-delay-1">
+    "Good design is not about beauty alone — it's about building <em>trust</em> before a single word is read."
+  </blockquote>
+  <p class="philosophy-attr reveal reveal-delay-2">— The NEXA Principle</p>
+  <div class="philosophy-pillars reveal reveal-delay-3">
+    <div class="philo-pill">
+      <div class="philo-pill-mark"></div>
+      <div class="philo-pill-text">Minimalism Creates Clarity</div>
+    </div>
+    <div class="philo-pill">
+      <div class="philo-pill-mark"></div>
+      <div class="philo-pill-text">Premium Brands Deserve Premium Digital</div>
+    </div>
+    <div class="philo-pill">
+      <div class="philo-pill-mark"></div>
+      <div class="philo-pill-text">Simplicity is Sophistication</div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <div class="testimonials-inner">
+    <div class="section-eyebrow reveal">
+      <div class="section-eyebrow-line"></div>
+      <span class="section-eyebrow-text">Client Perspectives</span>
+    </div>
+    <h2 class="testimonials-headline reveal reveal-delay-1">
+      What Businesses<br><em>Experience.</em>
+    </h2>
+    <div class="testimonials-grid">
+      <div class="testimonial-card reveal reveal-delay-1">
+        <div class="testimonial-mark">"</div>
+        <p class="testimonial-text">Professional and modern process from start to finish. The design immediately elevated our brand perception in the market.</p>
+        <div class="testimonial-divider"></div>
+        <div class="testimonial-source">Modern Clinic — Healthcare Brand</div>
+      </div>
+      <div class="testimonial-card reveal reveal-delay-2">
+        <div class="testimonial-mark">"</div>
+        <p class="testimonial-text">Clean communication and premium execution. Our new website finally feels like it matches the quality of our actual service.</p>
+        <div class="testimonial-divider"></div>
+        <div class="testimonial-source">Boutique Hospitality — Hotel Brand</div>
+      </div>
+      <div class="testimonial-card reveal reveal-delay-3">
+        <div class="testimonial-mark">"</div>
+        <p class="testimonial-text">NEXA understood exactly what premium means for our industry. The result speaks for itself — trust from the very first scroll.</p>
+        <div class="testimonial-divider"></div>
+        <div class="testimonial-source">Architecture Studio — Design Firm</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="process">
+  <div class="process-inner">
+    <div class="section-eyebrow reveal">
+      <div class="section-eyebrow-line"></div>
+      <span class="section-eyebrow-text">How We Work</span>
+    </div>
+    <h2 class="process-headline reveal reveal-delay-1">
+      The<br>NEXA<br><em>Process.</em>
+    </h2>
+    <div class="process-steps">
+      <div class="process-step reveal reveal-delay-1">
+        <div class="process-dot"><span class="process-dot-num">01</span></div>
+        <div class="process-step-title">Discovery</div>
+        <div class="process-step-desc">We begin by understanding your business, audience, and goals to form a strategic foundation.</div>
+      </div>
+      <div class="process-step reveal reveal-delay-2">
+        <div class="process-dot"><span class="process-dot-num">02</span></div>
+        <div class="process-step-title">Strategy</div>
+        <div class="process-step-desc">We map the user journey and visual direction, aligning design decisions with business outcomes.</div>
+      </div>
+      <div class="process-step reveal reveal-delay-3">
+        <div class="process-dot"><span class="process-dot-num">03</span></div>
+        <div class="process-step-title">Design</div>
+        <div class="process-step-desc">Pixel-perfect execution. Premium aesthetics. Every detail considered and intentional.</div>
+      </div>
+      <div class="process-step reveal reveal-delay-4">
+        <div class="process-dot"><span class="process-dot-num">04</span></div>
+        <div class="process-step-title">Launch</div>
+        <div class="process-step-desc">A polished, optimized launch — and your brand elevated to where it deserves to be.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="final-cta-bg"></div>
+  <div class="final-cta-grid"></div>
+  <div class="final-cta-content">
+    <div class="final-cta-pre reveal">Ready When You Are</div>
+    <h2 class="final-cta-headline reveal reveal-delay-1">
+      Your Brand Deserves<br>Better Than a<br><em>Generic Website.</em>
+    </h2>
+    <p class="final-cta-sub reveal reveal-delay-2">Build trust. Elevate perception. Create a premium digital presence that reflects the real value of your business.</p>
+    <a href="mailto:nexa.creators07@gmail.com" class="final-cta-btn reveal reveal-delay-3">
+      <span>Start Your Brand Upgrade</span>
+    </a>
+    <div class="final-email reveal reveal-delay-4">
+      Or reach us directly at <a href="mailto:nexa.creators07@gmail.com">nexa.creators07@gmail.com</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <div class="footer-logo-mark"><span>N</span></div>
+      <div>
+        <div class="footer-logo-text">NEXA</div>
+        <div class="footer-logo-sub">Website Building Co.</div>
+      </div>
+    </div>
+    <ul class="footer-nav">
+      <li><a href="#about">About</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#process">Process</a></li>
+      <li><a href="mailto:nexa.creators07@gmail.com">Contact</a></li>
+    </ul>
+    <div class="footer-copy">© 2025 NEXA Website Building Co. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+  // Cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx + 'px'; cursor.style.top = my + 'px'; });
+  function animRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animRing);
+  }
+  animRing();
+  document.querySelectorAll('a, button, .service-card, .project-card, .testimonial-card, .why-item').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cursor.style.width = '20px'; cursor.style.height = '20px';
+      ring.style.width = '56px'; ring.style.height = '56px';
+    });
+    el.addEventListener('mouseleave', () => {
+      cursor.style.width = '10px'; cursor.style.height = '10px';
+      ring.style.width = '36px'; ring.style.height = '36px';
+    });
+  });
+
+  // Loader
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('loader').classList.add('hidden');
+      document.getElementById('heroCard').classList.add('visible');
+    }, 1800);
+  });
+
+  // Navbar scroll
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // Reveal on scroll
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  reveals.forEach(el => observer.observe(el));
+
+  // Smooth scroll for nav links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    });
+  });
+</script>
+</body>
+</html>
